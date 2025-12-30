@@ -1,9 +1,9 @@
-import React from 'react'
+import Navbar from './components/Navbar';
 
 const App = () => {
   return (
     <div>
-      <h1 className='text-center'>Car Rental projects</h1>
+      <Navbar/>
     </div>
   )
 }
