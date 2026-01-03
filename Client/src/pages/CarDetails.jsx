@@ -20,7 +20,7 @@ const CarDetails = () => {
   return car ? (
     <div className='px-6 md:px-16 lg:px-24 xl:px-32 mt-16'>
 
-      <button onClick={() => navigate(-1)} className='flex items-center gap-2 mb-6 text-gray-500 cursor-pointer'>
+      <button onClick={() => navigate(-1)} className='flex items-center gap-2 mb-6 text-gray-500 py-2 px-1 cursor-pointer'>
         <img className='rotate-180 opacity-65' src={assets.arrow_icon} alt="arrow" />
         Back to All Cars
       </button>
