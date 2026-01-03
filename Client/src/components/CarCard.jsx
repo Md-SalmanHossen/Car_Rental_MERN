@@ -1,11 +1,16 @@
 import React from 'react'
 import { assets } from '../assets/assets'
+import { Link } from 'react-router-dom';
+
+
+
 
 const CarCard = ({ car }) => {
 
    const currency = import.meta.env.VITE_CURRENCY;
 
   return (
+   <Link to={`/car-details/${car._id}`}>
     <div className='group rounded-xl overflow-hidden shadow-lg hover:-translate-y-1 transition-all duration-500 cursor-pointer'>
       
       <div className='relative h-48 overflow-hidden'>
@@ -46,6 +51,7 @@ const CarCard = ({ car }) => {
          </div>
       </div>
     </div>
+    </Link>
   )
 }
 
