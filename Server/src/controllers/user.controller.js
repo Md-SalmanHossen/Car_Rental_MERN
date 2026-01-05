@@ -1,17 +1,23 @@
 import User from "../models/Users.model.js";
 import bcrypt,{genSalt} from 'bcryptjs';
-import { jwt } from 'jsonwebtoken';
+import generateToken from "../utils/generate_token.utils.js";
 
 
 export const register=async(req ,res)=>{
    try {
       const {name,email,password}=req.body;
 
-      if(!name||!email || !password ||password.length<8){
+      if(!name||!email || !password){
          return res.status(400).json({
             status:'fail',
-            message:'Fill  all the fields'
+            message:'All fields are required'
          })
+      }
+
+      if (password.length < 8) {
+         return res.status(400).json({
+            message: "Password must be at least 8 characters" 
+         });
       }
 
       const userExist=await User.findOne({email});
@@ -31,10 +37,17 @@ export const register=async(req ,res)=>{
          password:hashedPass
       });
 
+      const token=generateToken(user._id);
+      
       res.status(201).json({
          status:'success',
          message:'User register successfully',
-         user
+         token,
+         user:{
+            _id:user._id,
+            name:user.name,
+            email:user.email
+         },
       });
       
    } catch (error) {
@@ -67,22 +80,23 @@ export const login=async(req ,res)=>{
 
        const matchedPass=await bcrypt.compare(password,user.password);
        if(!matchedPass){
-         return res.status(400).json({
+         return res.status(401).json({
             status:'fail',
-            message:'Wrong email or password'
+            message:'Invalid email or password'
          })
        } 
 
-       const token=jwt.sign(
-         {id:user._id},
-         process.env.JWT_SECRET,
-         {expiresIn:'1d'}
-      )
+       const token=generateToken(user._id);
 
        res.status(200).json({
          status:'success',
-         message:'Login successfully',
-         token
+         message:'User login successfully',
+         token,
+         user:{
+            _id:user._id,
+            name:user.name,
+            email:user.email
+         }
        });
 
    } catch (error) {
