@@ -38,7 +38,7 @@ export const register=async(req ,res)=>{
       });
 
       const token=generateToken(user._id);
-      
+
       res.status(201).json({
          status:'success',
          message:'User register successfully',
@@ -108,3 +108,32 @@ export const login=async(req ,res)=>{
    }
 }
 
+export const getUser=async(req,res)=>{
+   try {
+
+      const user=await User.findById(req.user).select("-password");
+      if(!user){
+         return res.status(404).json({
+            status:'fail',
+            message:'User not found'
+         })
+      }
+
+      res.status(200).json({
+         status:'success',
+         user:{
+            _id:user._id,
+            name:user.name,
+            email:user.email
+         }
+      });
+
+      
+   } catch (error) {
+      res.status(500).json({
+         status:'fail',
+         message:'Server internal error',
+         error:error.message
+      })
+   }
+}
