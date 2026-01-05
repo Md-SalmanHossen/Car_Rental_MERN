@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import connectDB from './src/configs/db.config.js';
 import routeHandler from './src/middlewares/route_handler.middleware.js';
 import user_router from './src/routes/user.routes.js';
+import owner_router from './src/routes/owner.routes.js';
 
 
 dotenv.config();
@@ -20,6 +21,10 @@ await connectDB();
 
 //router
 app.use('/api/user',user_router);
+app.use('/api/owner',owner_router);
+
+
+
 app.use(routeHandler);
 
 export default app;
