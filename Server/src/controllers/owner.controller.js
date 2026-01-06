@@ -2,6 +2,7 @@ import imageKit from "../configs/imagekit.config.js";
 import User from "../models/Users.model.js";
 import fs from "fs";
 import Car from "../models/Car.model.js";
+import Booking from "../models/Booking.model.js";
 
 //api to change roll
 export const changeRoleToOwner = async (req, res) => {
@@ -204,14 +205,25 @@ export const getDashboard=async(req ,res)=>{
         })
       }
 
-      const totalCars=await Car.countDocuments({owner:req.user._id});
-      const availableCars=await Car.countDocuments({owner:req.user._id,isAvailable:true});
+      const cars = await Car.countDocuments({ owner: req.user._id });
+      const booking=await Booking.find({owner:req.user._id}).populate('car').sort({createdAt:-1});
+      const pending=await Booking.find({owner:req.user._id,status:'pending'});
+      const confirmed=await Booking.find({owner:req.user._id,status:'confirmed'});
+      const cancelled=await Booking.find({owner:req.user._id,status:'cancelled'});
 
+      const monthlyRevenue=booking.filter(booking=>booking.status==='confirmed').reduce((acc,booking)=>acc+booking.price,0);
+
+      const dashboard={
+        totalCars:cars.length,
+        totalBookings:booking.length,
+        pendingBookings:pending.length,
+        completeBookings:confirmed.length,
+        recentBookings:booking.slice(0,4),
+        monthlyRevenue
+      }
       res.status(200).json({
         status:'success',
-        data:{
-          totalCars,availableCars
-        }
+        dashboard
       });
 
    } catch (error) {
@@ -221,6 +233,49 @@ export const getDashboard=async(req ,res)=>{
       error: error.message,
     });
    }
+}
+
+//api to update user image
+export const updateUserImage=async(req ,res)=>{
+  try {
+
+    const {_id}=req.user;
+    
+
+    const imageFile=req.file;
+    const buffer = fs.readFileSync(imageFile.path);
+
+    const uploadRes = await imageKit.upload({
+      file: buffer,
+      fileName: imageFile.originalname,
+      folder: "/users",
+    });
+
+    fs.unlinkSync(imageFile.path);
+
+    const imageUrl = imageKit.url({
+      path: uploadRes.filePath,
+      transformation: [
+        { width: "400" },
+        { quality: "auto" },
+        { format: "webp" },
+      ],
+    });
+
+    await User.findByIdAndUpdate(_id,{imageUrl});
+
+    res.status(201).json({
+      status: "success",
+      message: "Image Updated",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      status:'fail',
+      message:'Server internal error',
+      error:error.message
+    })
+  }
 }
 
 

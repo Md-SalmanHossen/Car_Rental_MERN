@@ -13,7 +13,9 @@ router.post('/add-car', authMiddleware, upload.single("image"), owner.addCar);
 router.get('/cars',authMiddleware, owner.getOwnerCars);
 router.put('/toggle-car', authMiddleware , owner.toggleCarAvailability);
 router.delete('/delete-car', authMiddleware , owner.deleteCar);
+
 router.get('/dashboard', authMiddleware , owner.getDashboard);
+router.put('/update-image',authMiddleware,upload.single('image'), owner.updateUserImage);
 
 
 export default router;
