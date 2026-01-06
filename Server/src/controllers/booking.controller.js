@@ -8,14 +8,23 @@ import checkAvailability from '../utils/check_available.utils.js'
 export const checkAvailabilityOfCar=async(req ,res)=>{
    try {
 
-      const {location,pickupDate,returnDate}=req.body;
+      const {location,pickup_date,return_date}=req.body;
+
+      if(!pickup_date || return_date){
+         return res.status(400).json({
+            status:'fail',
+            message:'Pickup and return date required'
+         })
+      }
+
       const cars=await Car.find({location,isAvailable:true});
       
       const availableCarsPromise=cars.map(async(car)=>{
-         await checkAvailability(car._id,pickupDate,returnDate);
+
+         const isAvailable=await checkAvailability(car._id,pickup_date,return_date);
          return {
             ...car._doc,
-            isAvailable:isAvailable
+            isAvailable
          }
       })
 
@@ -54,6 +63,14 @@ export const createBooking=async(req ,res)=>{
 
       const picked=new Date(pickup_date);
       const returned=new Date(return_date);
+
+      if (returned <= picked) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Invalid booking date'
+      });
+    }
+
       const nonOfDays=Math.ceil((returned -picked)/(1000*60*60*24));
       const price=carData.pricePerDay * nonOfDays;
 
@@ -78,7 +95,9 @@ export const getUserBooking=async(req ,res)=>{
    try {
 
       const {_id}=req.user;
-      const booking=(await Booking.find({user:_id}).populate("car")).toSorted({createdAt:-1});
+      const booking=await Booking.find({user:_id})
+         .populate("car")
+         .sort({createdAt:-1});
 
       res.status(200).json({
          status:'success',
@@ -131,9 +150,18 @@ export const bookingStatus=async(req ,res)=>{
       const {bookingId,status}=req.body;
 
       const booking=await Booking.findById(bookingId);
+      if (!booking) {
+         return res.status(404).json({
+           status: 'fail',
+           message: 'Booking not found'
+         });
+      }
 
       if(booking.owner.toString()!=_id.toString()){
-         return res.status()
+         return res.status(401).json({
+            status:'fail',
+            message:'Unauthorized'
+         });
       }
 
       booking.status=status;
