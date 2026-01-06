@@ -6,7 +6,7 @@ const bookingSchema=new mongoose.Schema({
    owner:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true},
    pickup_date:{type:Date,required:true},
    return_date:{type:Date,required:true},
-   return_date:{type:String,enum:['pending',confirmed,cancelled],default:'pending'},
+   status:{type:String,enum:['pending','confirmed','cancelled'],default:'pending'},
    price:{type:Number,required:true}
 },{timestamps:true});
 
