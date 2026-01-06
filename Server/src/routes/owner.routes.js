@@ -10,9 +10,10 @@ const router=express.Router();
 router.post('/change-role',authMiddleware, owner.changeRoleToOwner);
 router.post('/add-car', authMiddleware, upload.single("image"), owner.addCar);
 
-router.post('/cars',authMiddleware, owner.getOwnerCars);
-router.post('/toggle-car', authMiddleware , owner.toggleCarAvailability);
-router.post('/delete-car', authMiddleware , owner.deleteCar);
+router.get('/cars',authMiddleware, owner.getOwnerCars);
+router.put('/toggle-car', authMiddleware , owner.toggleCarAvailability);
+router.delete('/delete-car', authMiddleware , owner.deleteCar);
+router.get('/dashboard', authMiddleware , owner.getDashboard);
 
 
 export default router;
