@@ -7,6 +7,7 @@ import connectDB from './src/configs/db.config.js';
 import routeHandler from './src/middlewares/route_handler.middleware.js';
 import user_router from './src/routes/user.routes.js';
 import owner_router from './src/routes/owner.routes.js';
+import booking_router from './src/routes/Booking.routes.js'
 
 
 dotenv.config();
@@ -22,6 +23,7 @@ await connectDB();
 //router
 app.use('/api/user',user_router);
 app.use('/api/owner',owner_router);
+app.use('/api/booking',booking_router);
 
 
 
