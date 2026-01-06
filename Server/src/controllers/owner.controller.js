@@ -127,4 +127,97 @@ export const getOwnerCars = async (req, res) => {
   }
 };
 
+//api to toggle car availability
+export const toggleCarAvailability=async(req ,res)=>{
+   try {
+      const {_id}=req.user;
+      const {carId}=req.body;
+      const car=await Car.findById(carId);
+
+      if(car.owner.toString()!==_id.toString()){
+        return res.status(401).json({
+          status:'fail',
+          message:'Unauthorized'
+        })
+      }
+
+      car.isAvailable=!car.isAvailable;
+      await car.save();
+
+      res.status(200).json({
+        status:'success',
+        message:'Availability toggled'
+      });
+
+   } catch (error) {
+      res.status(500).json({
+      status: "fail",
+      message: "Server internal error",
+      error: error.message,
+    });
+   }
+}
+
+//api to delete a car
+export const deleteCar=async(req ,res)=>{
+   try {
+      const {_id}=req.user;
+      const {carId}=req.body;
+      const car=await Car.findById(carId);
+
+      if(car.owner.toString()!==_id.toString()){
+        return res.status(401).json({
+          status:'fail',
+          message:'Unauthorized'
+        })
+      }
+
+      car.owner=null;
+      car.isAvailable=false;
+      await car.save();
+
+      res.status(200).json({
+        status:'success',
+        message:'Car removed'
+      });
+
+   } catch (error) {
+      res.status(500).json({
+      status: "fail",
+      message: "Server internal error",
+      error: error.message,
+    });
+   }
+}
+
+//api to to get dashboard data
+export const getDashboard=async(req ,res)=>{
+   try {
+
+      const {_id}=req.user;
+      if(role!=='owner'){
+        return res.status(401).json({
+          status:'success',
+          message:'Unauthorized'
+        })
+      }
+
+      const cars=await Car.find({owner:_id});
+
+      res.status(200).json({
+        status:'success',
+        message:'Car removed'
+      });
+
+   } catch (error) {
+      res.status(500).json({
+      status: "fail",
+      message: "Server internal error",
+      error: error.message,
+    });
+   }
+}
+
+
+
 
