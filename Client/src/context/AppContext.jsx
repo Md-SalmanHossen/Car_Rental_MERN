@@ -67,13 +67,14 @@ export const AppProvider = ({ children }) => {
    useEffect(() => {
       const storedToken = localStorage.getItem("token");
       if (storedToken) setToken(storedToken);
-      fetchedCars();
+      
    }, []);
 
    useEffect(() => {
       if (token) {
          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
          fetchUser();
+         fetchedCars();
       }
    }, [token]);
 

@@ -8,7 +8,8 @@ const router=express.Router();
 
 router.post('/register',user.register);
 router.post('/login',user.login);
-router.get('/me', protect, user.getUser);
+router.get('/data', protect, user.getUser);
+router.get('/cars', protect, user.getCars);
 
 
 

@@ -1,6 +1,7 @@
 import User from "../models/Users.model.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/generate_token.utils.js";
+import Car from './../models/Car.model.js';
 
 export const register = async (req, res) => {
   try {
@@ -125,6 +126,31 @@ export const getUser = async (req, res) => {
         name: user.name,
         email: user.email,
       },
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: "Server internal error",
+      error: error.message,
+    });
+  }
+};
+
+export const getCars = async (req, res) => {
+  try {
+    const cars = await Car.find({isAvailable:true});
+
+    if (!cars) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Cars not found",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message:'cars fetched successfully',
+      cars
     });
   } catch (error) {
     res.status(500).json({
